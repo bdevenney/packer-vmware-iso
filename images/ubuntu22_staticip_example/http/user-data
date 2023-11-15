@@ -1,0 +1,37 @@
+#cloud-config
+autoinstall:
+    version: 1
+    early-commands:
+        # workaround to stop ssh for packer as it thinks it timed out
+        - sudo systemctl stop ssh
+    locale: en_GB
+    keyboard:
+        layout: gb
+    packages: [open-vm-tools, openssh-server]
+    network:
+        network:
+            version: 2
+            ethernets:
+                ens33:
+                    dhcp4: no
+                    addresses: [192.168.108.135/24]
+                    nameservers:
+                        addresses: [192.168.108.2]
+                    routes:
+                    - to: 0.0.0.0/0
+                      via: 192.168.108.2
+    identity:
+        hostname: ubuntu-server
+        username: ubuntu
+        password: "$6$rounds=4096$ntlX/dlo6b$HXaLN4RcLIGaEDdQdR2VTYi9pslSeXWL131MqaakqE285Nv0kW9KRontQYivCbycZerUMcjVsuLl2V8bbdadI1"
+    ssh:
+        install-server: yes
+        allow-pw: true
+    storage:
+        layout:
+            name: direct
+    user-data:
+        disable_root: false
+    late-commands:
+        - echo 'ubuntu ALL=(ALL) NOPASSWD:ALL' > /target/etc/sudoers.d/ubuntu
+        - curtin in-target --target=/target -- chmod 440 /etc/sudoers.d/ubuntu

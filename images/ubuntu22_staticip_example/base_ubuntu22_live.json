@@ -1,0 +1,55 @@
+{
+    "variables": {
+        "vm_name": "Ubuntu-2204-Live-Template-Static",
+        "ssh_username": "ubuntu",
+        "ssh_password": "ubuntu",
+        "iso_url": "Z:\\isos\\ubuntu\\ubuntu-22\\ubuntu-22.04.1-live-server-amd64.iso",
+        "iso_checksum": "10F19C5B2B8D6DB711582E0E27F5116296C34FE4B313BA45F9B201A5007056CB",
+        "boot_wait": "10s",
+        "memsize": "2048",
+        "numvcpus": "2",
+        "disk_size": "40960"
+    },
+    "builders": [
+        {
+            "type": "vmware-iso",
+            "disk_size": "{{ user `disk_size` }}",
+            "disk_type_id": "0",
+            "guest_os_type": "ubuntu64Guest",
+            "headless": false,
+            "iso_checksum": "{{ user `iso_checksum` }}",
+            "iso_url": "{{ user `iso_url` }}",
+            "http_directory": "http",
+            "boot_command": [
+                "e<down><down><down><end>",
+                " autoinstall ds=nocloud;",
+                "<F10>"
+            ],
+            "boot_wait": "{{ user `boot_wait` }}",
+            "cd_files": [
+                "./http/meta-data",
+                "./http/user-data"
+            ],
+            "cd_label": "cidata",
+            "shutdown_command": "sudo shutdown -h now",
+            "ssh_password": "{{ user `ssh_password` }}",
+            "ssh_port": 22,
+            "ssh_host": "192.168.108.135",
+            "ssh_username": "{{ user `ssh_username` }}",
+            "ssh_timeout": "30m",
+            "vm_name": "{{ user `vm_name` }}",
+            "network": "NAT",
+            "cpus": 2,
+            "cores": 2,
+            "memory": 2048
+        }
+    ],
+    "provisioners": [
+        {
+            "type": "shell",
+            "inline": [
+                "echo 'Packer Template Build -- Complete'"
+            ]
+        }
+    ]
+}
